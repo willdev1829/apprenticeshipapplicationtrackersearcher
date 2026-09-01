@@ -82,7 +82,7 @@ def fetchmostrecentapprenticeship():
 
 #function to store all apprenticeships, before sifting for only valid ones.
 
-def storeallapprenticeship(number,company,title,level,salary,location,applicationstartdate,applicationenddate,startdate):
+def storeallapprenticeship(score, number,company,title,level,salary,location,applicationstartdate,applicationenddate,startdate):
 
     import sqlite3
 
@@ -94,9 +94,10 @@ def storeallapprenticeship(number,company,title,level,salary,location,applicatio
     #create a table to store previous values of calculations
 
     cursor.execute("""CREATE TABLE IF NOT EXISTS allapprenticeships (
-            number real
+            score real,
+            number real,
             company text,
-            title real,
+            title text,
             level real,
             salary real,
             location text,
@@ -105,8 +106,8 @@ def storeallapprenticeship(number,company,title,level,salary,location,applicatio
             startdate text
             )""")
 
-    cursor.execute("INSERT INTO openapprenticeships(number, company, title, level, salary, location, applicationstartdate, applicationenddate, startdate) VALUES (?,?,?,?,?,?,?,?,?)", #inserts data of last calculation into the table
-                   (number,company,title,level,salary,location,applicationstartdate,applicationenddate,startdate)
+    cursor.execute("INSERT INTO allapprenticeships(score, number, company, title, level, salary, location, applicationstartdate, applicationenddate, startdate) VALUES (?, ?,?,?,?,?,?,?,?,?)", #inserts data of last calculation into the table
+                   (score, number,company,title,level,salary,location,applicationstartdate,applicationenddate,startdate)
                    )
 
     connection.commit() #commits changes to database.

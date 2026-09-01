@@ -1,26 +1,29 @@
-import os
-import requests
 
-API_URL = "https://api.apprenticeships.education.gov.uk/vacancies/vacancy"
+def fetchvacancies():
 
-headers = {
-    "Ocp-Apim-Subscription-Key": os.environ["APPRENTICESHIP_API_KEY"],
-    "X-Version": "2",
-}
+    import os, time, requests
 
-params = {"PageSize": 10, "PageNumber": 1}
+    BASE = "https://api.apprenticeships.education.gov.uk/vacancies"
+    headersdict ={"Ocp-Apim-Subscription-Key": os.environ["APPRENTICESHIP_API_KEY"], "X-Version": "2","User-Agent": "applicationtrackersearcher/0.1 (personal apprenticeship search)" }
 
-response = requests.get(API_URL, headers=headers, params=params, timeout = 45)
-print(response.status_code)
+    page = 1
+    vacancies = []
+      
+    while True:
+        parameters = {
+                    "Routes": "Digital",
+                    "PageSize": 100,
+                    "PageNumber": page,
+                    "IncludeDetails": "true",
+                    "Sort": "AgeDesc",
+                    "ExcludeRecruitingNationally": "false",
+                    }
+        r = requests.get(f"{BASE}/vacancy", headers = headersdict, params = parameters , timeout = 30)
+        r.raise_for_status()
+        vacancydata = r.json()
+        vacancies += vacancydata["vacancies"]
+        if page >= vacancydata["totalPages"]:
+            return vacancies
+        page += 1
+        time.sleep(2)
 
-if response.status_code != 200:
-    print(response.text)
-
-response.raise_for_status()
-
-apprenticeshipdata = response.json()
-
-print(f"total: {apprenticeshipdata['total']}, pages: {apprenticeshipdata['totalPages']}")
-
-for vacancy in apprenticeshipdata["vacancies"]:
-    print(vacancy["vacancyReference"], "|", vacancy["employerName"], "|", vacancy["title"])
