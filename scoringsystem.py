@@ -4,12 +4,10 @@
 def scorevacancy(vacancy):
     #scoring system for apprenticeship level
     def scoreapprenticeshiplevel(apprenticeshiplevel):
-        if apprenticeshiplevel == 6:
+        if apprenticeshiplevel == "Degree":
+            levelscore = 20
+        elif apprenticeshiplevel == "Higher":
             levelscore = 5
-        elif apprenticeshiplevel == 5:
-            levelscore = 4
-        elif apprenticeshiplevel == 4:
-            levelscore = 3
         else:
             levelscore = 0
         return levelscore
@@ -22,8 +20,8 @@ def scorevacancy(vacancy):
         import pgeocode
         area = pgeocode.GeoDistance("GB")
         distancekm = area.query_postal_code(mypostcode,companypostcode)
-        if distancemiles is None or math.isnan(float(distancemiles)):
-            return 0
+        if distancekm is None or math.isnan(float(distancekm)):
+            return 3
         distancemiles = distancekm * 0.621371192
         return distancemiles
 
@@ -45,7 +43,7 @@ def scorevacancy(vacancy):
 
     def getsalaryscore(salaryvalue):
         if salaryvalue is None:
-            return 0
+            return 3
         salaryscore=0
         if salaryvalue <= 20000.0:
             salaryscore = 1
@@ -54,9 +52,9 @@ def scorevacancy(vacancy):
         elif salaryvalue <= 24000.0:
             salaryscore  = 3
         elif salaryvalue <= 26000.0:
-            salaryscore = 4
-        else:
             salaryscore = 5
+        else:
+            salaryscore = 10
         return salaryscore
 
     def scoresalary(salaryvalue):
@@ -95,7 +93,7 @@ def scorevacancy(vacancy):
     #overall scoring system for single vacancy
 
     def producescore(vacancy):
-        locationscore = scorelocation("WV3 7BY", vacancy[5])
+        locationscore = scorelocation("WV3", vacancy[5])
         levelscore = scoreapprenticeshiplevel(vacancy[3])
         salaryscore = scoresalary(vacancy[4])
         companyscore = scorecompany(vacancy[1])
@@ -108,6 +106,7 @@ def scorevacancy(vacancy):
         elif companyscore is None:
             companyscore = 0
         totalscore = locationscore + levelscore + salaryscore + companyscore
+        totalscore = totalscore * 2.5 #ensures scores are scaled up so that the scoring system is out of 100
         return totalscore
 
     score = producescore(vacancy)

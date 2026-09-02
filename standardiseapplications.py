@@ -5,8 +5,8 @@ def standardiseapplication(vacancy):
             storetext(checkalllevels(vacancy, "employerName")),
             storetext(checkalllevels(vacancy, "title")),
             storetext(checkalllevels(vacancy, "apprenticeshipLevel")),
-            storenumber(checkalllevels(vacancy, "wage", "wageAmount")),
-            storetext(checkalllevels(vacancy, "addresses", "postcode")),
+            storesalary(checkalllevels(vacancy, "wage")),
+            storetext(checkalllevels(vacancy, "addresses", 0, "postcode")),
             storedate(checkalllevels(vacancy, "postedDate")),
             storedate(checkalllevels(vacancy, "closingDate")),
             storedate(checkalllevels(vacancy, "startDate")),
@@ -17,7 +17,7 @@ def standardiseapplication(vacancy):
             if isinstance(k, int):
                 if not isinstance(vacancy, list) or len(vacancy) <= k: 
                     return None
-                vacancy = vacancy(k)
+                vacancy = vacancy[k]
             else:
                 if not isinstance(vacancy, dict): 
                     return None
@@ -33,6 +33,20 @@ def standardiseapplication(vacancy):
         try:
             return float(value)
         except (TypeError, ValueError):
+            return None
+
+    def storesalary(salary):
+        import re
+        if not isinstance(salary, dict):
+            return None
+        if salary.get("wageUnit") != "Annually":
+            return None
+        matchsalary = re.search(r"£\s*([\d,]+(?:\.\d+)?)", salary.get("wageAdditionalInformation") or "")
+        if not matchsalary:
+            return None
+        try: 
+            return float(matchsalary.group(1).replace(",", ""))
+        except ValueError:
             return None
 
     def storedate(value):

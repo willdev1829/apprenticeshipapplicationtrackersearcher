@@ -1,8 +1,9 @@
 def rundailycheck():
     from retrieveapplications import fetchvacancies
     from standardiseapplications import standardiseapplication
-    from applicationdatabase import storeallapprenticeship
+    from applicationdatabase import storeallapprenticeship, storevalidapprenticeship, gettopapprenticeships
     from scoringsystem import scorevacancy
+    from sendnotification import sendapprenticeships
     vacancies = fetchvacancies()
     for vacancy in vacancies:
         standardisedvacancy = standardiseapplication(vacancy)
@@ -17,5 +18,7 @@ def rundailycheck():
         applicationenddate = standardisedvacancy[7]
         startdate = standardisedvacancy[8]
         storeallapprenticeship(score, number, company, title, level, salary, location, applicationstartdate, applicationenddate, startdate)
-
+    storevalidapprenticeship()
+    topapprenticeships = gettopapprenticeships()
+    sendapprenticeships()
 rundailycheck()
