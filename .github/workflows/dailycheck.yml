@@ -22,4 +22,4 @@ jobs:
         env:
           APPRENTICESHIP_API_KEY: ${{ secrets.APPRENTICESHIP_API_KEY }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
-        run: python run.py'
+        run: python run.py
